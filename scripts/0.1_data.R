@@ -23,3 +23,6 @@ save(alter_df, file = "./data/alter_df.rda")  # Save clean version
 # Check the structure of the ego_df
 ego_df
 str(ego_df)
+# Check the structure of the alter_df
+alter_df
+
