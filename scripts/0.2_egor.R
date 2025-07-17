@@ -1,6 +1,7 @@
 ## = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 ## Create egor object
 ## = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+
 # Load packages
 library(tidyverse)
 library(igraph)

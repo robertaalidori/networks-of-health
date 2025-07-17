@@ -1,5 +1,5 @@
 ## = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
-## Measures of network compositions
+## Cleaning data
 ## = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
 # Load packages.
@@ -75,18 +75,22 @@ egor_filtered <- egor::egor(
 ## Type of support
 ## = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
-# Create a new egor object with additional variables for social support and strain typology using name generators and R
+# Create a new egor object with additional variables for social support and strain typology (If B6B... is not NA, then the alter does provide practical support. 
+# Don’t care if the value is 1, 2, ..., 6 as it just indicates rank/order, not absence of support. For D1L  values are 1 (definitely would to 4 definitely would not)
+# So D1L codified as 1 or 2 → Yes (demands help) 3 or 4 → No. Something else → Missing/invalid
+
 egor_support <- egor(
   egos = ego_filtered,
   alters = alter_filtered |>
     mutate(
-      practical_support = case_when(B6B == "1" ~ 1, TRUE ~ 0),
-      emergency_support = case_when(B7C == "1" ~ 1, TRUE ~ 0),
-      emotional_support = case_when(B4A == "1" ~ 1, TRUE ~ 0),
-      appraisal_support = case_when(B5A == "1" ~ 1, TRUE ~ 0),
-      conflict_tie      = case_when(B9A == "1" ~ 1, TRUE ~ 0),
-      burdensome_tie    = case_when(B8A == "1" ~ 1, TRUE ~ 0),
-      demands_help = case_when(
+      practical_support = if_else(!is.na(B6B), 1, 0),
+      emergency_support = if_else(!is.na(B7C), 1, 0),
+      emotional_support = if_else(!is.na(B4A), 1, 0),
+      
+      appraisal_support = if_else(!is.na(B5A), 1, 0),
+      conflict_tie      = if_else(!is.na(B9A), 1, 0),
+      burdensome_tie    = if_else(!is.na(B8A), 1, 0),
+      demands_help      = case_when(
         D1L %in% c(1, 2) ~ 1,
         D1L %in% c(3, 4) ~ 0,
         TRUE ~ NA_real_
@@ -101,7 +105,20 @@ egor_support <- egor(
   )
 )
 
-# Save the new egor object with support and strain variables
+# Check the structure of the new egor object
+egor_support$alter |>
+  select(practical_support, demands_help) |>
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "value") |>
+  count(variable, value)
+
+egor_support$alter |>
+  count(B6B_is_na = is.na(B6B), practical_support)
+
+egor_support$alter |>
+  count(D1L, demands_help)
+
+
+# Save the new egor object 
 save(egor_support, file = "./data/egor_support.rda")
 
 ## = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
@@ -117,6 +134,7 @@ egor_support$alter |>
   select(starts_with("C1A_")) |>
   summarise(across(everything(), ~ list(unique(.))))
 
+# Convert C1A_ variables to numeric values
 egor_support$alter <- egor_support$alter |>
 mutate(across(starts_with("C1A_"),
               ~ case_when(
@@ -127,15 +145,14 @@ mutate(across(starts_with("C1A_"),
               )
 ))
 
-
-# Check the class of C1A_ variables
+# Check conversion (the class of C1A_ variables)
 egor_support$alter |>
   select(starts_with("C1A_")) |>
   summarise(across(everything(), class))
 
 view(egor_support$alter$C1A_1)
 
-# Check for overlaps between categories 
+# Check for overlaps between categories in variables C1A_
 egor_support$alter |>
   filter(C1A_3 == 1 & C1A_23 == 1) |>
   count()
@@ -156,7 +173,12 @@ egor_support$alter |>
   filter(C1A_10 == 1 & C1A_21 == 1) |>
   count()
 
-# Create a new variable for type of relationship (Immediate family, extended family, friends, acquaintances, other)
+# Create a new variable for type of relationship 
+# immediate family: (step)parents, (step)children, (step)siblings; 
+# extended family: other relatives;
+# friends: only those categorized as friends
+# acquaintances: all the others
+
 egor_support$alter <- egor_support$alter |>
   mutate(
     rel_immediate = rowSums(across(c(C1A_1, C1A_2, C1A_3, C1A_4, C1A_5, C1A_23, C1A_24, C1A_25, C1A_26)), na.rm = TRUE),
@@ -172,10 +194,8 @@ egor_support$alter <- egor_support$alter |>
   )
 
 # Check the distribution of the new variable
-egor_support$alter |>
+egor_supnet <- egor_support$alter |>
   count(relation_category) |>
   mutate(percent = round(100 * n / sum(n), 1))
 
 
-# Save the new egor object with type of relationship variable
-save(egor_support, file = "./data/egor_socnet.rda")
