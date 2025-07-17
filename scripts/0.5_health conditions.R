@@ -39,7 +39,7 @@ egor_socnet$ego |>
   count(G1, g1_numeric)
 
 # Visualise across race
-race_health_plot <-egor_socnet$ego |>
+egor_socnet$ego |>
   group_by(race) |>
   summarise(
     mean_health = mean(g1_numeric, na.rm = TRUE),
@@ -56,7 +56,7 @@ race_health_plot <-egor_socnet$ego |>
   theme_minimal()
 
 # Save the plot
-ggsave("outputs/average_health_by_race.png", plot = race_health_plot, width = 7, height = 5, dpi = 300)
+ggsave("outputs/average_health_by_race.pdf", width = 9, height = 5)
 
 # Chronic conditions (G7S1 - G7S6, G7S9)
 # Select and recode G7 variables as numeric (0 = No, 1 = Yes), merge it with race
