@@ -168,6 +168,9 @@ ego_tie_props <- ego_tie_counts |>
     p_demanding  = n_demanding / network_size
   )
 
+saveRDS(ego_tie_props, file = "data/ego_tie_props.rds")
+
+
 # Group by Race and Average the Proportions
 tie_prop_by_race <- ego_tie_props |>
   group_by(race) |>

@@ -1,0 +1,7 @@
+term,Estimate,t value,p-value,term_label
+raceAsian:p_positive,-0.0732,-0.1858,0.8526,Asian × Positive Ties
+raceBlack:p_positive,-0.33,-0.5238,0.6005,Black × Positive Ties
+raceMixed:p_positive,0.4944,0.7962,0.4261,Mixed × Positive Ties
+raceAsian:p_negative,-0.7407,-1.0688,0.2854,Asian × Negative Ties
+raceBlack:p_negative,-1.0754,-1.534,0.1253,Black × Negative Ties
+raceMixed:p_negative,1.3528,1.0492,0.2943,Mixed × Negative Ties
