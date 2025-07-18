@@ -5,6 +5,13 @@
 # Load the egor object
 load("./data/egor_support.rda")
 
+# Load packages
+library(tidyverse)
+library(ggplot2)
+library(stringr)
+library(dplyr)
+library(forcats)
+
 # Join alters with ego race
 alter_with_race <- egor_support$alter |>
   left_join(egor_support$ego |> select(.egoID, race), by = ".egoID")
@@ -109,10 +116,8 @@ support_plot <- ggplot(support_prop_long, aes(x = support_type, y = avg_proporti
   theme_minimal()
 
 # Save the plot
-ggsave(
-  filename = "./outputs/support_plot.pdf",
-  plot = support_plot,
-  width = 10, height = 6, dpi = 300)
+
+ggsave("outputs/support_plot.png", plot = support_plot, width = 7, height = 5, dpi = 300)
 
 ## = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 ## Create multiplex ties
@@ -212,11 +217,7 @@ tie_plot <- ggplot(tie_prop_long, aes(x = tie_type, y = avg_proportion, fill = r
   )
 
 # Save the plot
-ggsave(
-  filename = "./outputs/tie_plot.pdf",
-  plot = tie_plot,
-  width = 10, height = 6, dpi = 300
-)
+ggsave("outputs/tie_plot.png", plot = tie_plot, width = 8, height = 5, dpi = 300)
 
 # Save the egor object with race, support and relationship variables
 egor_socnet <- egor(

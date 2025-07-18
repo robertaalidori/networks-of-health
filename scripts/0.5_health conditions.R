@@ -5,6 +5,8 @@
 # Load data.
 load("./data/egor_socnet.rda")
 
+# Load packages
+library(tidyverse)
 library(ggplot2)
 library(stringr)
 library(dplyr)
@@ -70,10 +72,6 @@ g7_vars <- egor_socnet$ego |>
                 )
   ))
 
-# Check the conversion
-g7_vars |>
-  pivot_longer(cols = starts_with("G7S"), names_to = "var", values_to = "numeric_value") |>
-  count(var, numeric_value)
 
 # Save chronic conditions variable
 saveRDS(g7_vars, file = "data/g7_vars.rds")
@@ -106,7 +104,7 @@ g7_race_complete <- g7_race |>
   complete(race, condition_label, fill = list(proportion = 0))
 
 # Plot the Proportions
-ggplot(g7_race_complete, aes(x = race, y = proportion, fill = race)) +
+g7_plot <- ggplot(g7_race_complete, aes(x = race, y = proportion, fill = race)) +
   geom_col(position = "dodge") +
   facet_wrap(~ condition_label) +
   labs(
@@ -116,8 +114,10 @@ ggplot(g7_race_complete, aes(x = race, y = proportion, fill = race)) +
   ) +
   theme_minimal()
 
-# Save the plot
-ggsave("outputs/g7_health_conditions_by_race.pdf", plot = g7_plot, width = 10, height = 6, dpi = 300)
+print(g7_plot)
+
+# Now save it
+ggsave("outputs/g7_health_conditions_by_race.png", plot = g7_plot, width = 10, height = 6, dpi = 300)
 
 
 
